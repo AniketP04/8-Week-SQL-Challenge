@@ -60,3 +60,24 @@ GROUP BY customer_id;
 
 
 ---
+
+### **Q3. What was the first item from the menu purchased by each customer?**
+
+```sql
+WITH cte_order AS (
+  SELECT
+    sales.customer_id,
+    menu.product_name,
+    ROW_NUMBER() OVER(
+     PARTITION BY sales.customer_id
+      ORDER BY 
+        sales.order_date,  
+        sales.product_id
+    ) AS item_order
+    FROM dannys_diner.sales
+    JOIN dannys_diner.menu
+    ON sales.product_id = menu.product_id
+)
+SELECT * FROM cte_order
+WHERE item_order = 1;
+```
