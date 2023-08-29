@@ -81,3 +81,24 @@ WITH cte_order AS (
 SELECT * FROM cte_order
 WHERE item_order = 1;
 ```
+
+### **Q4. What is the most purchased item on the menu and how many times was it purchased by all customers?**
+```sql
+SELECT
+  menu.product_name,
+  COUNT(sales.product_id) AS order_count
+FROM dannys_diner.sales
+INNER JOIN dannys_diner.menu
+  ON sales.product_id = menu.product_id
+GROUP BY
+  menu.product_name
+ORDER BY order_count DESC
+LIMIT 1;
+```
+
+|product_id|product_name|order_count|
+|----------|------------|-----------|
+|3         |ramen       |8          |
+
+---
+
