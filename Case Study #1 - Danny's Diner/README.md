@@ -58,11 +58,9 @@ GROUP BY customer_id;
 |B          |6           |
 |C          |2           |
 
-
 ---
 
 ### **Q3. What was the first item from the menu purchased by each customer?**
-
 ```sql
 WITH cte_order AS (
   SELECT
@@ -81,6 +79,14 @@ WITH cte_order AS (
 SELECT * FROM cte_order
 WHERE item_order = 1;
 ```
+**Result:**
+| customer_id | product_name | item_order |
+| ----------- | ------------ | ---------- |
+| A           | sushi        | 1          |
+| B           | curry        | 1          |
+| C           | ramen        | 1          |
+
+---
 
 ### **Q4. What is the most purchased item on the menu and how many times was it purchased by all customers?**
 ```sql
@@ -101,4 +107,36 @@ LIMIT 1;
 |3         |ramen       |8          |
 
 ---
+
+### **Q5. Which item was the most popular for each customer?**
+````sql
+WITH most_popular AS (
+  SELECT 
+    sales.customer_id, 
+    menu.product_name, 
+    COUNT(menu.product_id) AS order_count,
+    DENSE_RANK() OVER (
+      PARTITION BY sales.customer_id 
+      ORDER BY COUNT(sales.customer_id) DESC) AS rank
+  FROM dannys_diner.menu
+  INNER JOIN dannys_diner.sales
+    ON menu.product_id = sales.product_id
+  GROUP BY sales.customer_id, menu.product_name
+)
+
+SELECT 
+  customer_id, 
+  product_name, 
+  order_count
+FROM most_popular 
+WHERE rank = 1;
+````
+
+| customer_id | product_name | order_count |
+| ----------- | ---------- |------------  |
+| A           | ramen        |  3   |
+| B           | sushi        |  2   |
+| B           | curry        |  2   |
+| B           | ramen        |  2   |
+| C           | ramen        |  3   |
 
